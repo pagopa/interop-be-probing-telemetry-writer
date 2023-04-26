@@ -1,5 +1,6 @@
 package it.pagopa.interop.probing.telemetry.writer.util.logging;
 
+import java.util.UUID;
 import it.pagopa.interop.probing.telemetry.writer.util.EserviceStatus;
 import software.amazon.awssdk.services.timestreamwrite.model.RejectedRecordsException;
 
@@ -12,6 +13,6 @@ public interface Logger {
 
   void logWriteRecordStatus(String database, String table, int statusCode);
 
-  void logRequest(String serviceName, EserviceStatus status, Integer responseTime, String koReason,
-      String checkTime);
+  void logRequest(UUID eserviceRecordId, EserviceStatus status, Integer responseTime,
+      String koReason, String checkTime);
 }

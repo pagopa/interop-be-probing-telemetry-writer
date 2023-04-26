@@ -13,8 +13,6 @@ import software.amazon.awssdk.services.timestreamwrite.model.Dimension;
 import software.amazon.awssdk.services.timestreamwrite.model.MeasureValue;
 import software.amazon.awssdk.services.timestreamwrite.model.MeasureValueType;
 import software.amazon.awssdk.services.timestreamwrite.model.Record;
-import software.amazon.awssdk.services.timestreamwrite.model.RejectedRecord;
-import software.amazon.awssdk.services.timestreamwrite.model.RejectedRecordsException;
 import software.amazon.awssdk.services.timestreamwrite.model.WriteRecordsRequest;
 import software.amazon.awssdk.services.timestreamwrite.model.WriteRecordsResponse;
 
@@ -33,7 +31,7 @@ public class TimestreamServiceImpl implements TimestreamService {
   @Autowired
   Logger logger;
 
-  private static final String NAME = "name";
+  private static final String ID = "id";
 
   private static final String KO_REASON = "ko_reason";
 
@@ -46,16 +44,17 @@ public class TimestreamServiceImpl implements TimestreamService {
 
   @Override
   public void writeRecord(TelemetryDto telemetry) {
-    logger.logRequest(telemetry.getServiceName(), telemetry.getStatus(),
+    logger.logRequest(telemetry.getEserviceRecordId(), telemetry.getStatus(),
         telemetry.getResponseTime(), telemetry.getKoReason(), telemetry.getCheckTime());
     List<Record> records = new ArrayList<>();
 
     List<Dimension> dimensions = new ArrayList<>();
-    final Dimension nome = Dimension.builder().name(NAME).value(telemetry.getServiceName()).build();
+    final Dimension id =
+        Dimension.builder().name(ID).value(telemetry.getEserviceRecordId().toString()).build();
     final Dimension koReason =
         Dimension.builder().name(KO_REASON).value(telemetry.getKoReason()).build();
 
-    dimensions.add(nome);
+    dimensions.add(id);
     dimensions.add(koReason);
 
     Record commonAttributes = Record.builder().dimensions(dimensions).build();
@@ -74,18 +73,9 @@ public class TimestreamServiceImpl implements TimestreamService {
     WriteRecordsRequest writeRecordsRequest = WriteRecordsRequest.builder().databaseName(database)
         .tableName(table).commonAttributes(commonAttributes).records(records).build();
 
-    try {
-      WriteRecordsResponse writeRecordsResponse = writeClient.writeRecords(writeRecordsRequest);
-      logger.logWriteRecordStatus(database, table,
-          writeRecordsResponse.sdkHttpResponse().statusCode());
-    } catch (RejectedRecordsException e) {
-      logger.logRejectedRecords(e);
-      for (RejectedRecord rejectedRecord : e.rejectedRecords()) {
-        logger.logRejectedRecordDetail(rejectedRecord.recordIndex(), rejectedRecord.reason());;
-      }
-    } catch (Exception e) {
-      logger.logException(e);
-    }
+    WriteRecordsResponse writeRecordsResponse = writeClient.writeRecords(writeRecordsRequest);
+    logger.logWriteRecordStatus(database, table,
+        writeRecordsResponse.sdkHttpResponse().statusCode());
 
   }
 

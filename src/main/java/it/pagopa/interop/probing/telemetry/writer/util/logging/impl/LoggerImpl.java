@@ -1,5 +1,6 @@
 package it.pagopa.interop.probing.telemetry.writer.util.logging.impl;
 
+import java.util.UUID;
 import org.springframework.stereotype.Component;
 import it.pagopa.interop.probing.telemetry.writer.util.EserviceStatus;
 import it.pagopa.interop.probing.telemetry.writer.util.logging.Logger;
@@ -12,11 +13,11 @@ import software.amazon.awssdk.services.timestreamwrite.model.RejectedRecordsExce
 public class LoggerImpl implements Logger {
 
   @Override
-  public void logRequest(String serviceName, EserviceStatus status, Integer responseTime,
+  public void logRequest(UUID eserviceRecordId, EserviceStatus status, Integer responseTime,
       String koReason, String checkTime) {
     log.info(
-        "Inserting measure. serviceName={} , status={} , responseTime={}, koReason={}, checktime={}",
-        serviceName, status.getValue(), responseTime, koReason, checkTime);
+        "Inserting measure. eserviceRecordId={} , status={} , responseTime={}, koReason={}, checktime={}",
+        eserviceRecordId, status.getValue(), responseTime, koReason, checkTime);
   }
 
   @Override

@@ -1,6 +1,7 @@
 package it.pagopa.interop.probing.telemetry.writer.config.database;
 
 import java.time.Duration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -12,17 +13,26 @@ import software.amazon.awssdk.services.timestreamwrite.TimestreamWriteClient;
 @Configuration
 public class TimestreamConfig {
 
+  @Value("${amazon.timestream.retries}")
+  private Integer retries;
+
+  @Value("${amazon.timestream.max.connections}")
+  private Integer maxConnections;
+
+  @Value("${amazon.timestream.attempt.timeout}")
+  private Integer attemptTimeout;
+
 
   @Bean
   public TimestreamWriteClient buildWriteClient() {
     ApacheHttpClient.Builder httpClientBuilder = ApacheHttpClient.builder();
-    httpClientBuilder.maxConnections(5000);
+    httpClientBuilder.maxConnections(maxConnections);
 
     RetryPolicy.Builder retryPolicy = RetryPolicy.builder();
-    retryPolicy.numRetries(10);
+    retryPolicy.numRetries(retries);
 
     ClientOverrideConfiguration.Builder overrideConfig = ClientOverrideConfiguration.builder();
-    overrideConfig.apiCallAttemptTimeout(Duration.ofSeconds(20));
+    overrideConfig.apiCallAttemptTimeout(Duration.ofSeconds(attemptTimeout));
     overrideConfig.retryPolicy(retryPolicy.build());
 
     return TimestreamWriteClient.builder().httpClientBuilder(httpClientBuilder)
