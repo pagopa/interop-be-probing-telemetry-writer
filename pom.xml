@@ -19,6 +19,7 @@
 		<java.version>17</java.version>
 		<spring.cloud.version>2020.0.3</spring.cloud.version>
 		<aws.sdk.version>2.17.203</aws.sdk.version>
+		<args4j.version>2.33</args4j.version>
 	</properties>
 	<organization>
 		<name>PagoPa</name>
@@ -54,7 +55,7 @@
 		<dependency>
 			<groupId>args4j</groupId>
 			<artifactId>args4j</artifactId>
-			<version>2.33</version>
+			<version>${args4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
