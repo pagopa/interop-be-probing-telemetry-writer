@@ -19,7 +19,7 @@ import software.amazon.awssdk.services.timestreamwrite.model.WriteRecordsRespons
 public class TimestreamServiceImpl implements TimestreamService {
 
   @Autowired
-  TimestreamWriteClient writeClient;
+  private TimestreamWriteClient writeClient;
 
   @Value("${amazon.timestream.database}")
   private String database;
@@ -28,7 +28,7 @@ public class TimestreamServiceImpl implements TimestreamService {
   private String table;
 
   @Autowired
-  Logger logger;
+  private Logger logger;
 
   private static final String ESERVICE_RECORD_ID_DIMENSION = "eservice_record_id";
 
