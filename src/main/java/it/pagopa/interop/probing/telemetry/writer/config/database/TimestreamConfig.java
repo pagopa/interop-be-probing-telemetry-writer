@@ -16,27 +16,20 @@ public class TimestreamConfig {
   @Value("${amazon.timestream.retries}")
   private Integer retries;
 
-  @Value("${amazon.timestream.max.connections}")
+  @Value("${amazon.timestream.maxConnections}")
   private Integer maxConnections;
 
-  @Value("${amazon.timestream.attempt.timeout}")
+  @Value("${amazon.timestream.attemptTimeout}")
   private Integer attemptTimeout;
 
 
   @Bean
   public TimestreamWriteClient buildWriteClient() {
-    ApacheHttpClient.Builder httpClientBuilder = ApacheHttpClient.builder();
-    httpClientBuilder.maxConnections(maxConnections);
-
-    RetryPolicy.Builder retryPolicy = RetryPolicy.builder();
-    retryPolicy.numRetries(retries);
-
-    ClientOverrideConfiguration.Builder overrideConfig = ClientOverrideConfiguration.builder();
-    overrideConfig.apiCallAttemptTimeout(Duration.ofSeconds(attemptTimeout));
-    overrideConfig.retryPolicy(retryPolicy.build());
-
-    return TimestreamWriteClient.builder().httpClientBuilder(httpClientBuilder)
-        .overrideConfiguration(overrideConfig.build())
+    return TimestreamWriteClient.builder()
+        .httpClientBuilder(ApacheHttpClient.builder().maxConnections(maxConnections))
+        .overrideConfiguration(ClientOverrideConfiguration.builder()
+            .apiCallAttemptTimeout(Duration.ofSeconds(attemptTimeout))
+            .retryPolicy(RetryPolicy.builder().numRetries(retries).build()).build())
         .credentialsProvider(DefaultCredentialsProvider.create()).build();
   }
 }
