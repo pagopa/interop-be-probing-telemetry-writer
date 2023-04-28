@@ -1,6 +1,7 @@
 package it.pagopa.interop.probing.telemetry.writer.service.impl;
 
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -46,20 +47,28 @@ public class TimestreamServiceImpl implements TimestreamService {
     logger.logRequest(telemetry.getEserviceRecordId(), telemetry.getStatus(),
         telemetry.getResponseTime(), telemetry.getKoReason(), telemetry.getCheckTime());
 
-    List<Dimension> dimensions = List.of(
-        Dimension.builder().name(ESERVICE_RECORD_ID_DIMENSION)
-            .value(telemetry.getEserviceRecordId().toString()).build(),
-        Dimension.builder().name(KO_REASON_DIMENSION).value(telemetry.getKoReason()).build());
+    List<Dimension> dimensions = Objects.nonNull(telemetry.getKoReason())
+        ? List.of(
+            Dimension.builder().name(ESERVICE_RECORD_ID_DIMENSION)
+                .value(telemetry.getEserviceRecordId().toString()).build(),
+            Dimension.builder().name(KO_REASON_DIMENSION).value(telemetry.getKoReason()).build())
+        : List.of(Dimension.builder().name(ESERVICE_RECORD_ID_DIMENSION)
+            .value(telemetry.getEserviceRecordId().toString()).build());
 
-
-    MeasureValue responseTime = MeasureValue.builder().name(RESPONSE_TIME_MEASURE)
-        .type(MeasureValueType.BIGINT).value(String.valueOf(telemetry.getResponseTime())).build();
     MeasureValue status = MeasureValue.builder().name(STATUS_MEASURE).type(MeasureValueType.VARCHAR)
         .value(telemetry.getStatus().getValue()).build();
-
-    List<Record> records =
-        List.of(Record.builder().measureName(TELEMETRY_MEASURE_NAME).time(telemetry.getCheckTime())
-            .measureValues(responseTime, status).measureValueType(MeasureValueType.MULTI).build());
+    List<Record> records = null;
+    if (Objects.nonNull(telemetry.getResponseTime())) {
+      MeasureValue responseTime = MeasureValue.builder().name(RESPONSE_TIME_MEASURE)
+          .type(MeasureValueType.BIGINT).value(String.valueOf(telemetry.getResponseTime())).build();
+      records = List.of(Record.builder().measureName(TELEMETRY_MEASURE_NAME)
+          .time(telemetry.getCheckTime()).measureValues(responseTime, status)
+          .measureValueType(MeasureValueType.MULTI).build());
+    } else {
+      records = List
+          .of(Record.builder().measureName(TELEMETRY_MEASURE_NAME).time(telemetry.getCheckTime())
+              .measureValues(status).measureValueType(MeasureValueType.MULTI).build());
+    }
 
     WriteRecordsRequest writeRecordsRequest = WriteRecordsRequest.builder().databaseName(database)
         .tableName(table).commonAttributes(Record.builder().dimensions(dimensions).build())
