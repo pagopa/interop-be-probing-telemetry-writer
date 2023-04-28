@@ -23,4 +23,9 @@ public class LoggerImpl implements Logger {
     log.info("WriteRecords on table {}.{} status: {}", database, table, statusCode);
   }
 
+  @Override
+  public void logConsumerMessage(String message) {
+    log.info("Message received : {}", message);
+  }
+
 }

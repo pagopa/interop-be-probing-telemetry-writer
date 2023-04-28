@@ -11,6 +11,7 @@ import io.awspring.cloud.messaging.listener.SqsMessageDeletionPolicy;
 import io.awspring.cloud.messaging.listener.annotation.SqsListener;
 import it.pagopa.interop.probing.telemetry.writer.dto.TelemetryDto;
 import it.pagopa.interop.probing.telemetry.writer.service.TimestreamService;
+import it.pagopa.interop.probing.telemetry.writer.util.logging.Logger;
 import it.pagopa.interop.probing.telemetry.writer.util.logging.LoggingPlaceholders;
 
 @Component
@@ -20,6 +21,8 @@ public class TelemetryReceiver {
   private TimestreamService timestreamService;
   @Autowired
   private ObjectMapper mapper;
+  @Autowired
+  private Logger logger;
 
   @SqsListener(value = "${amazon.sqs.endpoint.telemetry-queue}",
       deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
@@ -27,6 +30,7 @@ public class TelemetryReceiver {
       throws JsonMappingException, JsonProcessingException {
     MDC.put(LoggingPlaceholders.TRACE_ID_PLACEHOLDER,
         "- [CID= " + UUID.randomUUID().toString().toLowerCase() + "]");
+    logger.logConsumerMessage(message);
     try {
       timestreamService.writeRecord(mapper.readValue(message, TelemetryDto.class));
     } finally {
