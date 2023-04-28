@@ -57,7 +57,7 @@ public class TimestreamServiceImpl implements TimestreamService {
 
     MeasureValue status = MeasureValue.builder().name(STATUS_MEASURE).type(MeasureValueType.VARCHAR)
         .value(telemetry.getStatus().getValue()).build();
-    List<Record> records = null;
+    List<Record> records = List.of();
     if (Objects.nonNull(telemetry.getResponseTime())) {
       MeasureValue responseTime = MeasureValue.builder().name(RESPONSE_TIME_MEASURE)
           .type(MeasureValueType.BIGINT).value(String.valueOf(telemetry.getResponseTime())).build();
