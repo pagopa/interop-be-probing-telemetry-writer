@@ -1,11 +1,13 @@
 package it.pagopa.interop.probing.telemetry.writer.service.impl;
 
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import it.pagopa.interop.probing.telemetry.writer.dto.TelemetryDto;
 import it.pagopa.interop.probing.telemetry.writer.service.TimestreamService;
+import it.pagopa.interop.probing.telemetry.writer.util.EserviceStatus;
 import it.pagopa.interop.probing.telemetry.writer.util.logging.Logger;
 import software.amazon.awssdk.services.timestreamwrite.TimestreamWriteClient;
 import software.amazon.awssdk.services.timestreamwrite.model.Dimension;
@@ -19,7 +21,7 @@ import software.amazon.awssdk.services.timestreamwrite.model.WriteRecordsRespons
 public class TimestreamServiceImpl implements TimestreamService {
 
   @Autowired
-  TimestreamWriteClient writeClient;
+  private TimestreamWriteClient writeClient;
 
   @Value("${amazon.timestream.database}")
   private String database;
@@ -28,7 +30,7 @@ public class TimestreamServiceImpl implements TimestreamService {
   private String table;
 
   @Autowired
-  Logger logger;
+  private Logger logger;
 
   private static final String ESERVICE_RECORD_ID_DIMENSION = "eservice_record_id";
 
@@ -46,29 +48,47 @@ public class TimestreamServiceImpl implements TimestreamService {
     logger.logRequest(telemetry.getEserviceRecordId(), telemetry.getStatus(),
         telemetry.getResponseTime(), telemetry.getKoReason(), telemetry.getCheckTime());
 
-    List<Dimension> dimensions = List.of(
-        Dimension.builder().name(ESERVICE_RECORD_ID_DIMENSION)
-            .value(telemetry.getEserviceRecordId().toString()).build(),
-        Dimension.builder().name(KO_REASON_DIMENSION).value(telemetry.getKoReason()).build());
-
-
-    MeasureValue responseTime = MeasureValue.builder().name(RESPONSE_TIME_MEASURE)
-        .type(MeasureValueType.BIGINT).value(String.valueOf(telemetry.getResponseTime())).build();
-    MeasureValue status = MeasureValue.builder().name(STATUS_MEASURE).type(MeasureValueType.VARCHAR)
-        .value(telemetry.getStatus().getValue()).build();
-
-    List<Record> records =
-        List.of(Record.builder().measureName(TELEMETRY_MEASURE_NAME).time(telemetry.getCheckTime())
-            .measureValues(responseTime, status).measureValueType(MeasureValueType.MULTI).build());
-
     WriteRecordsRequest writeRecordsRequest = WriteRecordsRequest.builder().databaseName(database)
-        .tableName(table).commonAttributes(Record.builder().dimensions(dimensions).build())
-        .records(records).build();
+        .tableName(table)
+        .commonAttributes(Record.builder()
+            .dimensions(buildDimensions(telemetry.getEserviceRecordId(), telemetry.getKoReason()))
+            .build())
+        .records(buildMeasures(telemetry.getStatus(), telemetry.getResponseTime(),
+            telemetry.getCheckTime()))
+        .build();
 
     WriteRecordsResponse writeRecordsResponse = writeClient.writeRecords(writeRecordsRequest);
     logger.logWriteRecordStatus(database, table,
         writeRecordsResponse.sdkHttpResponse().statusCode());
 
+  }
+
+  private List<Dimension> buildDimensions(Long eserviceRecordId, String koReason) {
+    return Objects.nonNull(koReason)
+        ? List.of(
+            Dimension.builder().name(ESERVICE_RECORD_ID_DIMENSION)
+                .value(eserviceRecordId.toString()).build(),
+            Dimension.builder().name(KO_REASON_DIMENSION).value(koReason).build())
+        : List.of(Dimension.builder().name(ESERVICE_RECORD_ID_DIMENSION)
+            .value(eserviceRecordId.toString()).build());
+  }
+
+  private List<Record> buildMeasures(EserviceStatus status, Long responseTime, String checkTime) {
+    MeasureValue statusMeasure = MeasureValue.builder().name(STATUS_MEASURE)
+        .type(MeasureValueType.VARCHAR).value(status.getValue()).build();
+
+    List<Record> records = List.of();
+    if (Objects.nonNull(responseTime)) {
+      MeasureValue responseTimeMeasure = MeasureValue.builder().name(RESPONSE_TIME_MEASURE)
+          .type(MeasureValueType.BIGINT).value(String.valueOf(responseTime)).build();
+      records = List.of(Record.builder().measureName(TELEMETRY_MEASURE_NAME).time(checkTime)
+          .measureValues(responseTimeMeasure, statusMeasure)
+          .measureValueType(MeasureValueType.MULTI).build());
+    } else {
+      records = List.of(Record.builder().measureName(TELEMETRY_MEASURE_NAME).time(checkTime)
+          .measureValues(statusMeasure).measureValueType(MeasureValueType.MULTI).build());
+    }
+    return records;
   }
 
 }
