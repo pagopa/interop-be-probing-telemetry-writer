@@ -8,6 +8,6 @@ public interface Logger {
 
   void logWriteRecordStatus(String database, String table, int statusCode);
 
-  void logRequest(Long eserviceRecordId, EserviceStatus status, Integer responseTime,
-      String koReason, String checkTime);
+  void logRequest(Long eserviceRecordId, EserviceStatus status, Long responseTime, String koReason,
+      String checkTime);
 }

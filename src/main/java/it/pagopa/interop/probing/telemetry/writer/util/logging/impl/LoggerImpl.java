@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LoggerImpl implements Logger {
 
   @Override
-  public void logRequest(Long eserviceRecordId, EserviceStatus status, Integer responseTime,
+  public void logRequest(Long eserviceRecordId, EserviceStatus status, Long responseTime,
       String koReason, String checkTime) {
     log.info(
         "Inserting measure. eserviceRecordId={} , status={} , responseTime={}, koReason={}, checktime={}",

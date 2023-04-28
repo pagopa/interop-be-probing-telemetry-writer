@@ -21,7 +21,7 @@ public class TelemetryDto {
   private EserviceStatus status;
 
   @Min(value = 1, message = "must be at least 1")
-  private Integer responseTime;
+  private Long responseTime;
 
   @Size(min = 1, max = 2048, message = "must be at least 1 and less than or equal to 2048")
   private String koReason;
