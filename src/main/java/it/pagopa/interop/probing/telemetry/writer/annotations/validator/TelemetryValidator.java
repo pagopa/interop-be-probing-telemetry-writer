@@ -12,10 +12,10 @@ public class TelemetryValidator implements ConstraintValidator<ValidateTelemetry
   @Override
   public boolean isValid(TelemetryDto dto, ConstraintValidatorContext context) {
     return Objects.isNull(dto.getStatus())
-        || dto.getStatus().equals(EserviceStatus.KO) && Objects.nonNull(dto.getKoReason())
-            && Objects.isNull(dto.getResponseTime())
-        || dto.getStatus().equals(EserviceStatus.OK) && Objects.nonNull(dto.getResponseTime())
-            && Objects.isNull(dto.getKoReason());
+        || (dto.getStatus().equals(EserviceStatus.KO) && Objects.nonNull(dto.getKoReason())
+            && Objects.isNull(dto.getResponseTime()))
+        || (dto.getStatus().equals(EserviceStatus.OK) && Objects.nonNull(dto.getResponseTime())
+            && Objects.isNull(dto.getKoReason()));
   }
 
 }
