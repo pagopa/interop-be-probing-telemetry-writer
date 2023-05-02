@@ -17,10 +17,10 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>17</java.version>
-        <spring.cloud.version>2021.0.5</spring.cloud.version>
+		<spring.cloud.version>2020.0.3</spring.cloud.version>
 		<aws.sdk.version>2.17.203</aws.sdk.version>
 		<args4j.version>2.33</args4j.version>
-		<aws.cloud.version>2.4.2</aws.cloud.version>
+		<aws.cloud.version>2.3.0</aws.cloud.version>
 	</properties>
 	<organization>
 		<name>PagoPa</name>
@@ -75,6 +75,14 @@
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>sts</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-sts</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-iam</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>args4j</groupId>
