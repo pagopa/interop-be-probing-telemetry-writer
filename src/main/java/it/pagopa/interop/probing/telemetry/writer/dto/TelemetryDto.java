@@ -7,9 +7,15 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import it.pagopa.interop.probing.telemetry.writer.annotations.ValidateTelemetry;
 import it.pagopa.interop.probing.telemetry.writer.util.EserviceStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ValidateTelemetry
 public class TelemetryDto {
 
