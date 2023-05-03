@@ -39,7 +39,7 @@ public class TelemetryReceiverTest {
 
 
   @Test
-  @DisplayName("The receiveMessage method of TelemetryReceiver class is tested.")
+  @DisplayName("The receiveMessage method of TelemetryReceiver handles valid message successfully.")
   void testReceiveMessage_thenDoesNotThrowException() throws IOException {
     String message =
         "{\"eserviceRecordId\":3,\"status\":\"KO\",\"responseTime\":null,\"koReason\":\"exception\",\"checkTime\":\"1683023923118\"}";
@@ -49,7 +49,7 @@ public class TelemetryReceiverTest {
   }
 
   @Test
-  @DisplayName("The validation of the receiveMessage method is tested.")
+  @DisplayName("The receiveMessage method of TelemetryReceiver throws a ConstraintViolationException in case of an invalid message.")
   void testReceiveMessage_thenDoesThrowValidationException() throws IOException {
     String message =
         "{\"eserviceRecordId\":3,\"status\":\"OK\",\"responseTime\":null,\"koReason\":\"exception\",\"checkTime\":\"1683023923118\"}";

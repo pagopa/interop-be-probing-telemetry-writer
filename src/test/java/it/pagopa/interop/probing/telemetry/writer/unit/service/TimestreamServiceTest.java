@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import io.awspring.cloud.messaging.listener.SimpleMessageListenerContainer;
 import it.pagopa.interop.probing.telemetry.writer.dto.TelemetryDto;
 import it.pagopa.interop.probing.telemetry.writer.service.TimestreamService;
@@ -51,7 +49,7 @@ public class TimestreamServiceTest {
 
 
   @BeforeEach
-  void setup() throws JsonMappingException, JsonProcessingException {
+  void setup() {
     ReflectionTestUtils.setField(timestreamService, "table", "testTable");
     ReflectionTestUtils.setField(timestreamService, "database", "testDatabase");
     input = TelemetryDto.builder().eserviceRecordId(3L).status(EserviceStatus.KO)
@@ -59,8 +57,8 @@ public class TimestreamServiceTest {
   }
 
   @Test
-  @DisplayName("The receiveMessage method of TelemetryReceiver class is tested.")
-  void testReceiveMessage_thenDoesNotThrowException() throws IOException {
+  @DisplayName("The writeRecord method successfully build a writing request.")
+  void testWriteRecord_thenDoesNotThrowException() throws IOException {
     Mockito.when(writeClient.writeRecords(Mockito.any(WriteRecordsRequest.class)))
         .thenReturn(writeRecordsResponse);
     Mockito.when(writeRecordsResponse.sdkHttpResponse()).thenReturn(sdkHttpResponse);
