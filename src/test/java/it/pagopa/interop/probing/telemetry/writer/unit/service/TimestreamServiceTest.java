@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import io.awspring.cloud.messaging.listener.SimpleMessageListenerContainer;
-import it.pagopa.interop.probing.telemetry.writer.dto.TelemetryDto;
+import it.pagopa.interop.probing.telemetry.writer.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.telemetry.writer.service.TimestreamService;
 import it.pagopa.interop.probing.telemetry.writer.service.impl.TimestreamServiceImpl;
 import it.pagopa.interop.probing.telemetry.writer.util.EserviceStatus;

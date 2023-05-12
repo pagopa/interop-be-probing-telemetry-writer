@@ -1,5 +1,6 @@
-package it.pagopa.interop.probing.telemetry.writer.dto;
+package it.pagopa.interop.probing.telemetry.writer.dto.impl;
 
+import it.pagopa.interop.probing.telemetry.writer.dto.Dto;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @ValidateTelemetry
-public class TelemetryDto {
+public class TelemetryDto implements Dto {
 
   @NotNull(message = "must not be null")
   @Min(value = 1, message = "must be at least 1")

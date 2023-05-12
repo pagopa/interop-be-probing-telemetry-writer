@@ -17,12 +17,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.messaging.listener.SimpleMessageListenerContainer;
 import it.pagopa.interop.probing.telemetry.writer.consumer.TelemetryReceiver;
-import it.pagopa.interop.probing.telemetry.writer.dto.TelemetryDto;
+import it.pagopa.interop.probing.telemetry.writer.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.telemetry.writer.service.TimestreamService;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class TelemetryReceiverTest {
+class TelemetryReceiverTest {
 
   @InjectMocks
   @Autowired

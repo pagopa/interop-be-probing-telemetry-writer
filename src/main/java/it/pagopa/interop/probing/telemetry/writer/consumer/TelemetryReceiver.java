@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.messaging.listener.SqsMessageDeletionPolicy;
 import io.awspring.cloud.messaging.listener.annotation.SqsListener;
-import it.pagopa.interop.probing.telemetry.writer.dto.TelemetryDto;
+import it.pagopa.interop.probing.telemetry.writer.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.telemetry.writer.service.TimestreamService;
 import it.pagopa.interop.probing.telemetry.writer.util.logging.Logger;
 import it.pagopa.interop.probing.telemetry.writer.util.logging.LoggingPlaceholders;

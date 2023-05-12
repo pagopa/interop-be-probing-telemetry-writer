@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import it.pagopa.interop.probing.telemetry.writer.dto.TelemetryDto;
+import it.pagopa.interop.probing.telemetry.writer.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.telemetry.writer.service.TimestreamService;
 import it.pagopa.interop.probing.telemetry.writer.util.EserviceStatus;
 import it.pagopa.interop.probing.telemetry.writer.util.logging.Logger;
