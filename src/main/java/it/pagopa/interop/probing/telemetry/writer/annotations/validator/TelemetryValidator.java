@@ -4,7 +4,7 @@ import java.util.Objects;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import it.pagopa.interop.probing.telemetry.writer.annotations.ValidateTelemetry;
-import it.pagopa.interop.probing.telemetry.writer.dto.TelemetryDto;
+import it.pagopa.interop.probing.telemetry.writer.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.telemetry.writer.util.EserviceStatus;
 
 public class TelemetryValidator implements ConstraintValidator<ValidateTelemetry, TelemetryDto> {
