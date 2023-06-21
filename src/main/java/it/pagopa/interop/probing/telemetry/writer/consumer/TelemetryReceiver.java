@@ -1,11 +1,14 @@
 package it.pagopa.interop.probing.telemetry.writer.consumer;
 
-import java.util.UUID;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.xray.AWSXRay;
+import com.amazonaws.xray.entities.TraceHeader;
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.messaging.listener.SqsMessageDeletionPolicy;
 import io.awspring.cloud.messaging.listener.annotation.SqsListener;
@@ -15,6 +18,7 @@ import it.pagopa.interop.probing.telemetry.writer.util.logging.Logger;
 import it.pagopa.interop.probing.telemetry.writer.util.logging.LoggingPlaceholders;
 
 @Component
+@XRayEnabled
 public class TelemetryReceiver {
 
   @Autowired
@@ -24,17 +28,30 @@ public class TelemetryReceiver {
   @Autowired
   private Logger logger;
 
+  @Value("${spring.application.name}")
+  private String awsXraySegmentName;
+
   @SqsListener(value = "${amazon.sqs.endpoint.telemetry-queue}",
       deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
-  public void receiveMessage(final String message)
-      throws JsonMappingException, JsonProcessingException {
-    MDC.put(LoggingPlaceholders.TRACE_ID_PLACEHOLDER,
-        "- [CID= " + UUID.randomUUID().toString().toLowerCase() + "]");
+  public void receiveMessage(final Message messageFull, final String message)
+      throws JsonProcessingException {
+
+    String traceHeaderStr = messageFull.getAttributes().get("AWSTraceHeader");
+    TraceHeader traceHeader = TraceHeader.fromString(traceHeaderStr);
+    if (AWSXRay.getCurrentSegmentOptional().isEmpty()) {
+      AWSXRay.getGlobalRecorder().beginSegment(awsXraySegmentName, traceHeader.getRootTraceId(),
+          null);
+    }
+    MDC.put(LoggingPlaceholders.TRACE_ID_XRAY_PLACEHOLDER,
+        LoggingPlaceholders.TRACE_ID_XRAY_MDC_PREFIX
+            + AWSXRay.getCurrentSegment().getTraceId().toString() + "]");
+
     logger.logConsumerMessage(message);
     try {
       timestreamService.writeRecord(mapper.readValue(message, TelemetryDto.class));
     } finally {
       MDC.remove(LoggingPlaceholders.TRACE_ID_PLACEHOLDER);
     }
+    AWSXRay.endSegment();
   }
 }
