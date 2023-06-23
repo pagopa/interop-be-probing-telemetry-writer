@@ -33,10 +33,9 @@ public class TelemetryReceiver {
 
   @SqsListener(value = "${amazon.sqs.endpoint.telemetry-queue}",
       deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
-  public void receiveMessage(final Message messageFull, final String message)
-      throws JsonProcessingException {
+  public void receiveMessage(final Message message) throws JsonProcessingException {
 
-    String traceHeaderStr = messageFull.getAttributes().get("AWSTraceHeader");
+    String traceHeaderStr = message.getAttributes().get("AWSTraceHeader");
     TraceHeader traceHeader = TraceHeader.fromString(traceHeaderStr);
     if (AWSXRay.getCurrentSegmentOptional().isEmpty()) {
       AWSXRay.getGlobalRecorder().beginSegment(awsXraySegmentName, traceHeader.getRootTraceId(),
@@ -46,9 +45,9 @@ public class TelemetryReceiver {
         LoggingPlaceholders.TRACE_ID_XRAY_MDC_PREFIX
             + AWSXRay.getCurrentSegment().getTraceId().toString() + "]");
 
-    logger.logConsumerMessage(message);
+    logger.logConsumerMessage(message.getBody());
     try {
-      timestreamService.writeRecord(mapper.readValue(message, TelemetryDto.class));
+      timestreamService.writeRecord(mapper.readValue(message.getBody(), TelemetryDto.class));
     } finally {
       MDC.remove(LoggingPlaceholders.TRACE_ID_PLACEHOLDER);
       MDC.remove(LoggingPlaceholders.TRACE_ID_XRAY_PLACEHOLDER);
