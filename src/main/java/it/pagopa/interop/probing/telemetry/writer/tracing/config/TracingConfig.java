@@ -15,7 +15,7 @@ public class TracingConfig {
 
   @Bean
   public Filter tracingFilter() {
-    return new AWSXRayServletFilter("AmazonSQS");
+    return new AWSXRayServletFilter(awsXraySegmentName);
   }
 
   @Bean
