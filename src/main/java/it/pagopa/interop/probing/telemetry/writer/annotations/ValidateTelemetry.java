@@ -13,7 +13,7 @@ import it.pagopa.interop.probing.telemetry.writer.annotations.validator.Telemetr
 @Constraint(validatedBy = TelemetryValidator.class)
 public @interface ValidateTelemetry {
 
-  String message() default "A telemetry with an OK status must have a response time and no ko reason, while one with a KO status must have a ko reason and no response time";
+  String message() default "A telemetry with an OK status must have a response time and no ko reason, while one with a KO status must have a ko reason";
 
   Class<?>[] groups() default {};
 
