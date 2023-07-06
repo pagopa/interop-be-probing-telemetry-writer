@@ -5,10 +5,12 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import com.amazonaws.xray.AWSXRay;
 import it.pagopa.interop.probing.telemetry.writer.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.telemetry.writer.service.TimestreamService;
 import it.pagopa.interop.probing.telemetry.writer.util.EserviceStatus;
 import it.pagopa.interop.probing.telemetry.writer.util.logging.Logger;
+import it.pagopa.interop.probing.telemetry.writer.util.logging.LoggingPlaceholders;
 import software.amazon.awssdk.services.timestreamwrite.TimestreamWriteClient;
 import software.amazon.awssdk.services.timestreamwrite.model.Dimension;
 import software.amazon.awssdk.services.timestreamwrite.model.MeasureValue;
@@ -56,8 +58,9 @@ public class TimestreamServiceImpl implements TimestreamService {
         .records(buildMeasures(telemetry.getStatus(), telemetry.getResponseTime(),
             telemetry.getCheckTime()))
         .build();
-
+    AWSXRay.beginSubsegment(LoggingPlaceholders.TIMESTREAM_SUBSEGMENT_NAME);
     WriteRecordsResponse writeRecordsResponse = writeClient.writeRecords(writeRecordsRequest);
+    AWSXRay.endSubsegment();
     logger.logWriteRecordStatus(database, table,
         writeRecordsResponse.sdkHttpResponse().statusCode());
 

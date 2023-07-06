@@ -22,6 +22,7 @@
 		<args4j.version>2.33</args4j.version>
 		<aws.cloud.version>2.3.0</aws.cloud.version>
 		<mockito.version>3.9.0</mockito.version>
+		<com.amazonaws.version>2.14.0</com.amazonaws.version>
 	</properties>
 	<organization>
 		<name>PagoPa</name>
@@ -120,6 +121,26 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-xray-recorder-sdk-apache-http</artifactId>
+			<version>${com.amazonaws.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-xray-recorder-sdk-aws-sdk-instrumentor</artifactId>
+			<version>${com.amazonaws.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-xray-recorder-sdk-spring</artifactId>
+			<version>${com.amazonaws.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-xray-recorder-sdk-aws-sdk</artifactId>
+			<version>${com.amazonaws.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
