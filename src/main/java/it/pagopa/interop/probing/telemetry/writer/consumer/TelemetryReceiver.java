@@ -49,7 +49,6 @@ public class TelemetryReceiver {
     try {
       timestreamService.writeRecord(mapper.readValue(message.getBody(), TelemetryDto.class));
     } finally {
-      MDC.remove(LoggingPlaceholders.TRACE_ID_PLACEHOLDER);
       MDC.remove(LoggingPlaceholders.TRACE_ID_XRAY_PLACEHOLDER);
     }
     AWSXRay.endSegment();
